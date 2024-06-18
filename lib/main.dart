@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
           return MaterialApp(
-            home: authProvider.isAuthenticated ? HomeScreen() : LoginScreen(),
+            home: authProvider.isAuthenticated ? Deteccion() : LoginScreen(),
           );
         },
       ),
