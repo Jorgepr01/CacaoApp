@@ -92,7 +92,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     setState(() {
       _recognitions = recognitions;
       v = recognitions.toString();
-      v = '${_recognitions[0]["label"]}: ${_recognitions[0]["confidence"]}';
+      v = '${_recognitions[0]["label"]}: ${_recognitions[0]["confidence"].toStringAsFixed(2)}';
       // dataList = List<Map<String, dynamic>>.from(jsonDecode(v));
     });
     print("//////////////////////////////////////////////////");

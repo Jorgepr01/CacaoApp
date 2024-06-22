@@ -14,8 +14,7 @@ class AuthProvider with ChangeNotifier {
       body: {'email': email, 'password': password},
     );
 
-    if (response.statusCode == 200) { 
-      print(response.statusCode);
+    if (response.statusCode == 200) {
       var decodedResponse = jsonDecode(utf8.decode(response.bodyBytes)) as Map;
       if (decodedResponse['message'] == "Login successful"){
         Map<String, dynamic> user = Map<String, dynamic>.from(decodedResponse['user']);
