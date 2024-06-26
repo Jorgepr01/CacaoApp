@@ -27,6 +27,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
   File? file;
   var _recognitions;
   var v = "";
+  final TextEditingController _textController = TextEditingController();  // Controlador para el campo de entrada
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     });
   }
 
-  loadmodel() async {
+  Future<void> loadmodel() async {
     await Tflite.loadModel(
       model: "assets/model.tflite",
       labels: "assets/labels.txt",
@@ -51,7 +52,6 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
         file = File(image!.path);
       });
       await detectimage(file!);
-      uploadImage(file!, _recognitions);  // Llamar a uploadImage con recognitions
     } catch (e) {
       print('Error picking image: $e');
     }
@@ -65,15 +65,13 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
         file = File(image!.path);
       });
       await detectimage(file!);
-      uploadImage(file!, _recognitions);  // Llamar a uploadImage con recognitions
     } catch (e) {
       print('Error picking image: $e');
     }
   }
 
-
-  Future detectimage(File image) async {
-    int startTime = new DateTime.now().millisecondsSinceEpoch;
+  Future<void> detectimage(File image) async {
+    int startTime = DateTime.now().millisecondsSinceEpoch;
     var recognitions = await Tflite.runModelOnImage(
       path: image.path,
       numResults: 6,
@@ -83,38 +81,51 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     );
     setState(() {
       _recognitions = recognitions;
-      v = recognitions.toString();
-      v = '${_recognitions[0]["label"]}: ${_recognitions[0]["confidence"].toStringAsFixed(2)}';
+      if (recognitions != null && recognitions.isNotEmpty) {
+        v = '${_recognitions[0]["label"]}: ${_recognitions[0]["confidence"].toStringAsFixed(2)}';
+      } else {
+        v = 'No recognitions found';
+      }
     });
     print("//////////////////////////////////////////////////");
     print(_recognitions[0]["label"]);
     print(_recognitions[0]["confidence"]);
     print("//////////////////////////////////////////////////");
-    int endTime = new DateTime.now().millisecondsSinceEpoch;
+    int endTime = DateTime.now().millisecondsSinceEpoch;
     print("Inference took ${endTime - startTime}ms");
   }
 
-  Future<void> uploadImage(File image,var recognitions) async {
+  Future<void> _updateImage() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final user = authProvider.user;
 
     if (user == null) {
       print('User not authenticated');
+      setState(() {
+        v = 'User not authenticated';
+      });
       return;
     }
-    final uri = Uri.parse("http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/deteccion_movil.php");
+    if (file == null) {
+      print('No image selected');
+      setState(() {
+        v = 'No image selected';
+      });
+      return;
+    }
+    final uri = Uri.parse("http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/deteccion_movil.php");
     final request = http.MultipartRequest('POST', uri)
       ..fields['funcion'] = 'subir_imagen_seguimiento'
-      ..fields['estado'] = recognitions[0]["label"]
-      ..fields['porcentaje'] = recognitions[0]["confidence"].toStringAsFixed(2)
+      ..fields['estado'] = _recognitions[0]["label"]
+      ..fields['porcentaje'] = _recognitions[0]["confidence"].toStringAsFixed(2)
       ..fields['nombre'] = "este es el nombre"
       ..fields['latitud'] = '-12.12345'
       ..fields['longitud'] = '-12.12345'
       ..fields['user_id'] = "${user.id_us}"
       ..files.add(await http.MultipartFile.fromPath(
         'fileToUpload', 
-        image.path, 
-        filename: path.basename(image.path)
+        file!.path, 
+        filename: path.basename(file!.path)
       ));
     print(uri);
 
@@ -124,19 +135,22 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
 
       if (response.statusCode == 200) {
         print('Upload successful: $responseString');
-        // setState(() {
-        //   v = 'Upload successful: $responseString';  // Muestra la respuesta en la interfaz
-        // });
+        setState(() {
+          v = 'Upload successful: $responseString';
+          _image = null;  // Borra la imagen
+          file = null;  // Borra la imagen
+          _textController.clear();  // Limpia el campo de texto
+        });
       } else {
         print('Upload failed with status: ${response.statusCode}');
         setState(() {
-          v = 'Upload failed with status: ${response.statusCode}';  // Muestra el error en la interfaz
+          v = 'Upload failed with status: ${response.statusCode}';
         });
       }
     } catch (e) {
       print('Error uploading image: $e');
       setState(() {
-        v = 'Error uploading image: $e';  // Muestra el error en la interfaz
+        v = 'Error uploading image: $e';
       });
     }
   }
@@ -161,6 +175,13 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
             else
               Text('No image selected'),
             SizedBox(height: 20),
+            TextField(
+              controller: _textController,
+              decoration: InputDecoration(
+                hintText: 'Enter some text',
+              ),
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: _pickImage,
               child: Text('Pick Image from Gallery'),
@@ -168,6 +189,11 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
             ElevatedButton(
               onPressed: _pickImageCamara,
               child: Text('Pick Image from Camera'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _updateImage,
+              child: Text('Update Image'),
             ),
             SizedBox(height: 20),
             Text(v),

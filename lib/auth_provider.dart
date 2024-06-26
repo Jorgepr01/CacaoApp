@@ -14,7 +14,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/login_movil.php'),
+      Uri.parse('http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/login_movil.php'),
       body: {'email': email, 'password': password},
     );
 
