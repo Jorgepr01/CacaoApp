@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'auth_provider.dart'; // Importa el AuthProvider
+import 'tabla_escaneo.dart';
 
 class Deteccion extends StatelessWidget {
   @override
@@ -118,7 +119,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       ..fields['funcion'] = 'subir_imagen_seguimiento'
       ..fields['estado'] = _recognitions[0]["label"]
       ..fields['porcentaje'] = _recognitions[0]["confidence"].toStringAsFixed(2)
-      ..fields['nombre'] = "este es el nombre"
+      ..fields['nombre'] = _textController.text
       ..fields['latitud'] = '-12.12345'
       ..fields['longitud'] = '-12.12345'
       ..fields['user_id'] = "${user.id_us}"
@@ -180,6 +181,18 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
               decoration: InputDecoration(
                 hintText: 'Enter some text',
               ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EscaneosTableScreen(),
+                  ),
+                );
+              },
+              child: Text('tabla'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
