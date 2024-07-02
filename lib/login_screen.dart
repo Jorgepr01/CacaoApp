@@ -11,7 +11,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login")),
+      appBar: AppBar(title: Text("Iniciar Sesión")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -23,7 +23,7 @@ class LoginScreen extends StatelessWidget {
             ),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: "Password"),
+              decoration: InputDecoration(labelText: "Contraseña"),
               obscureText: true,
             ),
             SizedBox(height: 20),
@@ -33,7 +33,7 @@ class LoginScreen extends StatelessWidget {
                 String password = _passwordController.text;
                 context.read<AuthProvider>().login(email, password);
               },
-              child: Text("Login"),
+              child: Text("Iniciar Sesión"),
             ),
           ],
         ),

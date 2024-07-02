@@ -8,16 +8,23 @@ import 'package:provider/provider.dart';
 import 'auth_provider.dart'; // Importa el AuthProvider
 import 'tabla_escaneo.dart';
 
-class Deteccion extends StatelessWidget {
+class Seguimiento extends StatelessWidget {
+  final int idEscaneo;
+  Seguimiento({required this.idEscaneo});
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ImagePickerDemo(),
+      home: ImagePickerDemo(idEscaneo: idEscaneo),
     );
   }
 }
 
 class ImagePickerDemo extends StatefulWidget {
+  final int idEscaneo; // Añade este campo
+
+  ImagePickerDemo({required this.idEscaneo}); 
+
   @override
   _ImagePickerDemoState createState() => _ImagePickerDemoState();
 }
@@ -54,7 +61,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       });
       await detectimage(file!);
     } catch (e) {
-      print('Error al seleccionar la imagen: $e');
+      print('Error picking image: $e');
     }
   }
 
@@ -67,7 +74,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       });
       await detectimage(file!);
     } catch (e) {
-      print('Error al seleccionar la imagen: $e');
+      print('Error picking image: $e');
     }
   }
 
@@ -85,7 +92,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       if (recognitions != null && recognitions.isNotEmpty) {
         v = '${_recognitions[0]["label"]}: ${_recognitions[0]["confidence"].toStringAsFixed(2)}';
       } else {
-        v = 'No se encontró ninguna reconocimiento';
+        v = 'No recognitions found';
       }
     });
     print("//////////////////////////////////////////////////");
@@ -93,7 +100,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     print(_recognitions[0]["confidence"]);
     print("//////////////////////////////////////////////////");
     int endTime = DateTime.now().millisecondsSinceEpoch;
-    print("Inferencia tardó ${endTime - startTime}ms");
+    print("Inference took ${endTime - startTime}ms");
   }
 
   Future<void> _updateImage() async {
@@ -112,15 +119,15 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       });
       return;
     }
-    final uri = Uri.parse("http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/deteccion_movil.php");
+
+    final uri = Uri.parse("http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/trasabilidad_movil.php");
     final request = http.MultipartRequest('POST', uri)
-      ..fields['funcion'] = 'subir_imagen_seguimiento'
       ..fields['estado'] = _recognitions[0]["label"]
       ..fields['porcentaje'] = _recognitions[0]["confidence"].toStringAsFixed(2)
-      ..fields['nombre'] = _textController.text
-      ..fields['latitud'] = '-12.12345'
-      ..fields['longitud'] = '-12.12345'
-      ..fields['user_id'] = "${user.id_us}"
+      ..fields['observacion'] = _textController.text
+      ..fields['seguiminiento'] = '${widget.idEscaneo}'
+      // ..fields['longitud'] = '-12.12345'
+      // ..fields['user_id'] = "${user.id_us}"
       ..files.add(await http.MultipartFile.fromPath(
         'fileToUpload', 
         file!.path, 
@@ -133,33 +140,29 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       final responseString = await response.stream.bytesToString();
 
       if (response.statusCode == 200) {
-        print('Actukuacion exitosa: $responseString');
         setState(() {
-          // v = 'Actukuacion exitosa: $responseString';
-          v = 'Actualización exitosa';
+          v = 'Actualizacion exitosa: $responseString';
           _image = null;  // Borra la imagen
           file = null;  // Borra la imagen
           _textController.clear();  // Limpia el campo de texto
         });
       } else {
-        print('Upload failed with status: ${response.statusCode}');
         setState(() {
           v = 'Actualización fallida con estado: ${response.statusCode}';
         });
       }
     } catch (e) {
-      print('Error uploading image: $e');
       setState(() {
         v = 'Error en la actualización de la imagen: $e';
       });
     }
   }
-
+// diseño de la pantalla para el seguimiento
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Seguimiento'),
+        title: Text('Trasabilidad'),
       ),
       body: Center(
         child: Column(
@@ -178,7 +181,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
             TextField(
               controller: _textController,
               decoration: InputDecoration(
-                hintText: 'Ingrese nombre',
+                hintText: 'Ingrese observacion',
               ),
             ),
             SizedBox(height: 20),
@@ -205,7 +208,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _updateImage,
-              child: Text('Subir Imagen'),
+              child: Text('actualizar Imagen'),
             ),
             SizedBox(height: 20),
             Text(v),
