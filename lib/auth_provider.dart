@@ -48,16 +48,16 @@ class AuthProvider with ChangeNotifier {
         _isAuthenticated = true;
         notifyListeners();
       }else{
-        print(decodedResponse['message']);
-        print("datos incorrectos");
+        // print(decodedResponse['message']);
+        // print("datos incorrectos");
         _isAuthenticated = false;
         notifyListeners();
       }
     } else {
       _isAuthenticated = false;
-      print(response.statusCode);
-      print(response.body);
-      print("error al iniciar sesion");
+      // print(response.statusCode);
+      // print(response.body);
+      // print("error al iniciar sesion");
     }
   }
 

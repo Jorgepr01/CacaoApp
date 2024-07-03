@@ -54,7 +54,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       });
       await detectimage(file!);
     } catch (e) {
-      print('Error al seleccionar la imagen: $e');
+      // print('Error al seleccionar la imagen: $e');
     }
   }
 
@@ -67,7 +67,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       });
       await detectimage(file!);
     } catch (e) {
-      print('Error al seleccionar la imagen: $e');
+      // print('Error al seleccionar la imagen: $e');
     }
   }
 
@@ -126,14 +126,13 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
         file!.path, 
         filename: path.basename(file!.path)
       ));
-    print(uri);
+    // print(uri);
 
     try {
       final response = await request.send();
-      final responseString = await response.stream.bytesToString();
-
+      // final responseString = await response.stream.bytesToString();
       if (response.statusCode == 200) {
-        print('Actukuacion exitosa: $responseString');
+        // print('Actukuacion exitosa: $responseString');
         setState(() {
           // v = 'Actukuacion exitosa: $responseString';
           v = 'Actualización exitosa';
@@ -142,13 +141,13 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
           _textController.clear();  // Limpia el campo de texto
         });
       } else {
-        print('Upload failed with status: ${response.statusCode}');
+        // print('Upload failed with status: ${response.statusCode}');
         setState(() {
           v = 'Actualización fallida con estado: ${response.statusCode}';
         });
       }
     } catch (e) {
-      print('Error uploading image: $e');
+      // print('Error uploading image: $e');
       setState(() {
         v = 'Error en la actualización de la imagen: $e';
       });

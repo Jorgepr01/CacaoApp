@@ -11,7 +11,16 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Iniciar Sesión")),
+      appBar: AppBar(title: Text("Iniciar Sesión"),
+                      actions: [
+                          IconButton(
+                            icon: Icon(Icons.logout),
+                            onPressed: () {
+                              context.read<AuthProvider>().logout();
+                            },
+                          )
+                        ],
+                    ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -23,6 +23,8 @@ if (flutterVersionName == null) {
 }
 
 android {
+
+
     namespace "online.saicol.clasificacion"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion

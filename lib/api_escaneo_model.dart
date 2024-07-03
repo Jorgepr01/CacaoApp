@@ -11,7 +11,6 @@ Future<List<Escaneo>> fetchEscaneos(String userId) async {
 
   if (response.statusCode == 200) {
     List jsonResponse = json.decode(response.body);
-    print(jsonResponse);
     return jsonResponse.map((escaneo) => Escaneo.fromJson(escaneo)).toList();
   } else {
     throw Exception('Failed to load escaneos');

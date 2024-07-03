@@ -61,7 +61,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       });
       await detectimage(file!);
     } catch (e) {
-      print('Error picking image: $e');
+      // print('Error picking image: $e');
     }
   }
 
@@ -74,7 +74,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       });
       await detectimage(file!);
     } catch (e) {
-      print('Error picking image: $e');
+      // print('Error picking image: $e');
     }
   }
 
