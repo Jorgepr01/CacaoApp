@@ -1,16 +1,15 @@
 # clasificacion
 
-A new Flutter project.
+Proyecto de clasificación de imagenes de cacao version movil
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Este proyecto es la parte reducida y lite del proyeto de reconociemiento de cacao en el sitio agrocacao.medianewsonline.com
 
-A few resources to get you started if this is your first Flutter project:
+Para poder ejecutar el proyecto debes tener instalado flutter en tu computadora y tener instalado el plugin de image_picker y tflite_v2
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Para obtener más información sobre el proyecto, visita el sitio web http://agrocacao.medianewsonline.com/
+buena suerte y nos vemos en el futuro
