@@ -1,3 +1,4 @@
-Fitoftora fase1: Colonización
-Fitoftora fase2: Reproducción
-Cacao sano
+Sano
+Fitoftora_fase_1_Colonización
+Fitoftora_fase_2_Reproducción
+No identificado

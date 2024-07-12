@@ -1,7 +1,7 @@
 class Escaneo {
   final int idEscaneo;
   final String escaneo;
-  final String estadoEscaneo;
+  final int estadoEscaneo;
   final int porcentajeEscaneo;
   final String fechaEscaneo;
   final String imagenEscaneo; // Corregir el campo de 'imgen_escaneo'
@@ -24,7 +24,7 @@ class Escaneo {
     return Escaneo(
       idEscaneo: json['id_escaneo'],
       escaneo: json['escaneo'] ?? '',
-      estadoEscaneo: json['estado_escaneo'],
+      estadoEscaneo: json['estado_escaneo_id'],
       porcentajeEscaneo: json['porcentaje_escaneo'],
       fechaEscaneo: json['fecha_escaneo'],
       imagenEscaneo: json['imgen_escaneo'], // Corregir el campo de 'imgen_escaneo'

@@ -118,8 +118,8 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     final request = http.MultipartRequest('POST', uri)
       ..fields['funcion'] = 'subir_imagen_seguimiento'
       ..fields['estado'] = _recognitions[0]["label"]
-      ..fields['porcentaje'] = _recognitions[0]["confidence"].toStringAsFixed(2)
-      ..fields['nombre'] = _textController.text
+      ..fields['porcentaje'] = (_recognitions[0]["confidence"]*100).toStringAsFixed(2)
+      ..fields['lote'] = _textController.text
       ..fields['latitud'] = '-12.12345'
       ..fields['longitud'] = '-12.12345'
       ..fields['user_id'] = "${user.id_us}"
@@ -132,12 +132,13 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
 
     try {
       final response = await request.send();
-      // final responseString = await response.stream.bytesToString();
+      final responseString = await response.stream.bytesToString();
       if (response.statusCode == 200) {
         // print('Actukuacion exitosa: $responseString');
         setState(() {
-          // v = 'Actukuacion exitosa: $responseString';
-          v = 'Actualización exitosa';
+          v = 'Actukuacion exitosa';
+          print('Actukuacion exitosa: $responseString');
+          // v = 'Actualización exitosa';
           _image = null;  // Borra la imagen
           file = null;  // Borra la imagen
           _textController.clear();  // Limpia el campo de texto
@@ -198,7 +199,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
             TextField(
               controller: _textController,
               decoration: InputDecoration(
-                hintText: 'Ingrese nombre',
+                hintText: 'Ingrese Lote',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
                   borderSide: BorderSide(color: Color.fromARGB(255, 145, 86, 86)),
@@ -241,19 +242,19 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
                 children: <Widget>[
                   FloatingActionButton(
                     heroTag: 'gallery',
-                    backgroundColor: Colors.green,
+                    backgroundColor: Color.fromARGB(255, 145, 86, 86),
                     onPressed: _pickImage,
                     child: Icon(Icons.photo_library, color: Colors.white),
                   ),
                   FloatingActionButton(
                     heroTag: 'camera',
-                    backgroundColor: Colors.green,
+                    backgroundColor: Color.fromARGB(255, 145, 86, 86),
                     onPressed: _pickImageCamara,
                     child: Icon(Icons.camera_alt, color: Colors.white),
                   ),
                   FloatingActionButton(
                     heroTag: 'upload',
-                    backgroundColor: Colors.green,
+                    backgroundColor: Color.fromARGB(255, 145, 86, 86),
                     onPressed: _updateImage,
                     child: Icon(Icons.upload, color: Colors.white),
                   ),
