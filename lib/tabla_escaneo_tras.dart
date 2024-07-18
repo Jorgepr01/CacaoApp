@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'escaneo_model.dart'; // Importa tu modelo de datos
-import 'api_escaneo_model.dart'; // Importa la función fetchEscaneos
+import 'api_escaneo_model_tras.dart'; // Importa la función fetchEscaneos
 import 'seguimiento.dart';
 
-class EscaneosTableScreen extends StatefulWidget {
+class EscaneosTableScreen_Tras extends StatefulWidget {
   final int userId;
-  EscaneosTableScreen({required this.userId});
+  EscaneosTableScreen_Tras({required this.userId});
   @override
   _EscaneosTableScreenState createState() => _EscaneosTableScreenState();
 }
 
-class _EscaneosTableScreenState extends State<EscaneosTableScreen> {
+class _EscaneosTableScreenState extends State<EscaneosTableScreen_Tras> {
   Future<List<Escaneo>>? futureEscaneos;
   List<Escaneo>? escaneos;
   int _currentPage = 0;

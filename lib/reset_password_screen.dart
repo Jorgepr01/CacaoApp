@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'auth_provider.dart';
-import 'forgot_password_screen.dart';
+import 'codigo_rec_contra.dart';
+class ResetPasswordScreen extends StatelessWidget {
+  final String email;
+  final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
 
-class LoginScreen extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  LoginScreen({super.key});
+  ResetPasswordScreen({required this.email});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Iniciar Sesión", style: TextStyle(color: Colors.white)),
+        title: Text("Restablecer Contraseña", style: TextStyle(color: Colors.white)),
         backgroundColor: Color.fromARGB(255, 145, 86, 86),
         elevation: 0,
       ),
@@ -24,20 +22,16 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Hero(
-                tag: 'hero',
-                child: CircleAvatar(
-                  backgroundColor: Colors.transparent,
-                  radius: 100.0,
-                  child: Image.asset('assets/logo.png'),
-                ),
+              Text(
+                "Correo: $email",
+                style: TextStyle(color: Color.fromARGB(255, 145, 86, 86)),
               ),
               SizedBox(height: 20.0),
               TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
+                controller: _codeController,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: "Email",
+                  labelText: "Código de Verificación",
                   labelStyle: TextStyle(color: Color.fromARGB(255, 145, 86, 86)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
@@ -51,10 +45,10 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: 20.0),
               TextField(
-                controller: _passwordController,
+                controller: _newPasswordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: "Contraseña",
+                  labelText: "Nueva Contraseña",
                   labelStyle: TextStyle(color:Color.fromARGB(255, 145, 86, 86)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
@@ -69,9 +63,10 @@ class LoginScreen extends StatelessWidget {
               SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () {
-                  String email = _emailController.text;
-                  String password = _passwordController.text;
-                  context.read<AuthProvider>().login(email, password);
+                  String code = _codeController.text;
+                  String newPassword = _newPasswordController.text;
+                  CodigoRecuperacion(email,code,newPassword);
+                  // Aquí llamarías a la función para restablecer la contraseña
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white, backgroundColor:Color.fromARGB(255, 145, 86, 86),
@@ -80,20 +75,7 @@ class LoginScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
-                child: Text("Iniciar Sesión", style: TextStyle(fontSize: 16)),
-              ),
-              SizedBox(height: 20.0),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
-                  );
-                },
-                child: Text(
-                  "Olvidé mi contraseña",
-                  style: TextStyle(color: Color.fromARGB(255, 145, 86, 86)),
-                ),
+                child: Text("Restablecer Contraseña", style: TextStyle(fontSize: 16)),
               ),
             ],
           ),

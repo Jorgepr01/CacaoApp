@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import 'auth_provider.dart';
 import 'deteccion.dart';
+import 'home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,7 +11,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
           return MaterialApp(
-            home: authProvider.isAuthenticated ? Deteccion() : LoginScreen(),
+            home: authProvider.isAuthenticated ? HomePage() : LoginScreen(),
           );
         },
       ),

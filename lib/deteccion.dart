@@ -6,30 +6,22 @@ import 'package:tflite_v2/tflite_v2.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
-import 'auth_provider.dart'; // Importa el AuthProvider
-import 'tabla_escaneo.dart';
+import 'auth_provider.dart';
+import 'lote_http.dart';
+import 'lote_model.dart';
 
-class Deteccion extends StatelessWidget {
+class ScanPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ImagePickerDemo(),
-    );
-  }
+  _ScanPageState createState() => _ScanPageState();
 }
 
-class ImagePickerDemo extends StatefulWidget {
-  @override
-  _ImagePickerDemoState createState() => _ImagePickerDemoState();
-}
-
-class _ImagePickerDemoState extends State<ImagePickerDemo> {
+class _ScanPageState extends State<ScanPage> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
   File? file;
   var _recognitions;
   var v = "";
-  final TextEditingController _textController = TextEditingController();  // Controlador para el campo de entrada
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -55,7 +47,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       });
       await detectimage(file!);
     } catch (e) {
-      // print('Error al seleccionar la imagen: $e');
+      // Handle error
     }
   }
 
@@ -68,7 +60,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       });
       await detectimage(file!);
     } catch (e) {
-      // print('Error al seleccionar la imagen: $e');
+      // Handle error
     }
   }
 
@@ -89,92 +81,25 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
         v = 'No se encontró ninguna reconocimiento';
       }
     });
-    print("//////////////////////////////////////////////////");
-    print(_recognitions[0]["label"]);
-    print(_recognitions[0]["confidence"]);
-    print("//////////////////////////////////////////////////");
     int endTime = DateTime.now().millisecondsSinceEpoch;
     print("Inferencia tardó ${endTime - startTime}ms");
   }
 
- 
-  Future<void> _updateImage() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final user = authProvider.user;
-
-    if (user == null) {
-      setState(() {
-        v = 'Usuario no autenticado';
-      });
-      return;
-    }
-    if (file == null) {
-      setState(() {
-        v = 'Imagen no seleccionada';
-      });
-      return;
-    }
-    final uri = Uri.parse("http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/deteccion_movil.php");
-    final request = http.MultipartRequest('POST', uri)
-      ..fields['funcion'] = 'subir_imagen_seguimiento'
-      ..fields['estado'] = _recognitions[0]["label"]
-      ..fields['porcentaje'] = (_recognitions[0]["confidence"]*100).toStringAsFixed(2)
-      ..fields['lote'] = _textController.text
-      ..fields['latitud'] = '-12.12345'
-      ..fields['longitud'] = '-12.12345'
-      ..fields['user_id'] = "${user.id_us}"
-      ..files.add(await http.MultipartFile.fromPath(
-        'fileToUpload', 
-        file!.path, 
-        filename: path.basename(file!.path)
-      ));
-    // print(uri);
-
-    try {
-      final response = await request.send();
-      final responseString = await response.stream.bytesToString();
-      if (response.statusCode == 200) {
-        // print('Actukuacion exitosa: $responseString');
-        setState(() {
-          v = 'Actukuacion exitosa';
-          print('Actukuacion exitosa: $responseString');
-          // v = 'Actualización exitosa';
-          _image = null;  // Borra la imagen
-          file = null;  // Borra la imagen
-          _textController.clear();  // Limpia el campo de texto
-        });
-      } else {
-        // print('Upload failed with status: ${response.statusCode}');
-        setState(() {
-          v = 'Actualización fallida con estado: ${response.statusCode}';
-        });
-      }
-    } catch (e) {
-      // print('Error uploading image: $e');
-      setState(() {
-        v = 'Error en la actualización de la imagen: $e';
-      });
-    }
+  void _clearData() {
+    setState(() {
+      _image = null;
+      file = null;
+      _recognitions = null;
+      v = "";
+    });
   }
-   Future<int> usuario() async {
-  final authProvider = Provider.of<AuthProvider>(context, listen: false);
-  final user = authProvider.user;
-  return user!.id_us;
-  }
-@override
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Seguimiento', style: TextStyle(color: Colors.white)),
+        title: Text('Escanear Imagen'),
         backgroundColor: Color.fromARGB(255, 145, 86, 86),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              context.read<AuthProvider>().logout();
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -196,30 +121,21 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
             else
               Text('Imagen no seleccionada'),
             SizedBox(height: 20),
-            TextField(
-              controller: _textController,
-              decoration: InputDecoration(
-                hintText: 'Ingrese Lote',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide(color: Color.fromARGB(255, 145, 86, 86)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide(color: Color.fromARGB(255, 145, 86, 86)),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                int usu = await usuario();
-                Navigator.push(
+              onPressed: _isUploading ? null : () async {
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EscaneosTableScreen(userId: usu),
+                    builder: (context) => UploadPage(
+                      image: _image,
+                      file: file,
+                      recognitions: _recognitions,
+                    ),
                   ),
                 );
+                if (result == 'clear') {
+                  _clearData();
+                }
               },
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
@@ -229,12 +145,12 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
                   borderRadius: BorderRadius.circular(12.0),
                 ),
               ),
-              child: Text('Tabla'),
+              child: Text('Ingresar nombre, lote y Subir Imagen'),
             ),
             SizedBox(height: 20),
             Text(v),
-            SizedBox(height: 40),
-            Spacer (),
+            SizedBox(height: 20),
+            Spacer(),
             Container(
               padding: EdgeInsets.symmetric(vertical: 10.0),
               child: Row(
@@ -252,12 +168,6 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
                     onPressed: _pickImageCamara,
                     child: Icon(Icons.camera_alt, color: Colors.white),
                   ),
-                  FloatingActionButton(
-                    heroTag: 'upload',
-                    backgroundColor: Color.fromARGB(255, 145, 86, 86),
-                    onPressed: _updateImage,
-                    child: Icon(Icons.upload, color: Colors.white),
-                  ),
                 ],
               ),
             ),
@@ -268,3 +178,177 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
   }
 }
 
+class UploadPage extends StatefulWidget {
+  final XFile? image;
+  final File? file;
+  final dynamic recognitions;
+
+  UploadPage({required this.image, required this.file, required this.recognitions});
+
+  @override
+  _UploadPageState createState() => _UploadPageState();
+}
+class _UploadPageState extends State<UploadPage> {
+  final TextEditingController _textController = TextEditingController();
+  var v = "";
+  bool _isUploading = false;
+  List<Lote>? lotes;
+  String? selectedLote;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchLotes().then((data) {
+      setState(() {
+        lotes = data;
+      });
+    });
+  }
+
+  Future<void> _updateImage() async {
+    if (selectedLote == null) {
+      setState(() {
+        v = 'Por favor seleccione un lote';
+      });
+      return;
+    }
+
+    setState(() {
+      _isUploading = true;
+    });
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final user = authProvider.user;
+
+    if (user == null) {
+      setState(() {
+        v = 'Usuario no autenticado';
+        _isUploading = false;
+      });
+      return;
+    }
+    if (widget.file == null) {
+      setState(() {
+        v = 'Imagen no seleccionada';
+        _isUploading = false;
+      });
+      return;
+    }
+    final uri = Uri.parse("http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/deteccion_movil.php");
+    final request = http.MultipartRequest('POST', uri)
+      ..fields['funcion'] = 'subir_imagen_seguimiento'
+      ..fields['estado'] = widget.recognitions[0]["label"]
+      ..fields['porcentaje'] = (widget.recognitions[0]["confidence"] * 100).toStringAsFixed(2)
+      ..fields['escaneo'] = _textController.text
+      ..fields['lote_id'] = selectedLote!
+      ..fields['user_id'] = "${user.id_us}"
+      ..files.add(await http.MultipartFile.fromPath(
+        'fileToUpload',
+        widget.file!.path,
+        filename: path.basename(widget.file!.path),
+      ));
+
+    try {
+      final response = await request.send();
+      final responseString = await response.stream.bytesToString();
+      if (response.statusCode == 200) {
+        setState(() {
+          v = 'Actualización exitosa';
+        });
+        Navigator.pop(context, 'clear'); // Redirigir a ScanPage y limpiar datos
+      } else {
+        setState(() {
+          v = 'Actualización fallida con estado: ${response.statusCode}';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        v = 'Error en la actualización de la imagen: $e';
+      });
+    } finally {
+      setState(() {
+        _isUploading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ingresar nombre, lote y Subir Imagen'),
+        backgroundColor: Color.fromARGB(255, 145, 86, 86),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            if (widget.image != null)
+              Container(
+                height: 200,
+                width: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  image: DecorationImage(
+                    image: FileImage(File(widget.image!.path)),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              )
+            else
+              Text('Imagen no seleccionada'),
+            SizedBox(height: 20),
+            Text('Resultado del escaneo: ${widget.recognitions != null && widget.recognitions.isNotEmpty ? widget.recognitions[0]["label"] : "No se encontró ninguna reconocimiento"}'),
+            SizedBox(height: 20),
+            DropdownButton<String>(
+              hint: Text('Seleccione un lote'),
+              value: selectedLote,
+              items: lotes?.map((lote) {
+                return DropdownMenuItem<String>(
+                  value: '${lote.idLote}',
+                  child: Text(lote.nombre),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedLote = value;
+                });
+              },
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: _textController,
+              decoration: InputDecoration(
+                hintText: 'Ingrese nombre del escaneo',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Color.fromARGB(255, 145, 86, 86)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Color.fromARGB(255, 145, 86, 86)),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: (_isUploading || selectedLote == null) ? null : _updateImage,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Color.fromARGB(255, 145, 86, 86),
+                minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+              ),
+              child: Text(_isUploading ? 'Subiendo...' : 'Subir Imagen'),
+            ),
+            SizedBox(height: 20),
+            Text(v),
+          ],
+        ),
+      ),
+    );
+  }
+}
