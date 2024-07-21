@@ -7,7 +7,6 @@ Future<List<Lote>> fetchLotes() async {
     Uri.parse('http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/lote_movil.php'),
     body: {'funcion': 'datos_lote'},
   );
-  print(response.body);
   if (response.statusCode == 200) {
     final jsonResponse = json.decode(response.body);
     final List<dynamic> lotesJson = jsonResponse['data'];

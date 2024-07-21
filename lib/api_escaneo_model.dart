@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'escaneo_model.dart'; // Importa tu modelo de datos
 
-Future<List<Escaneo>> fetchEscaneos(String userId) async {
-
-      final response = await http.post(
-      Uri.parse('http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/seguimiento_movil.php'),
-      body: {'user_id': userId},
-    );
-
+Future<List<Escaneo>> fetchEscaneos(String userId, String tipoUs) async {
+  final response = await http.post(
+    Uri.parse('http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/seguimiento_movil.php'),
+    body: {'us_id': userId, 'tipo': tipoUs},
+  );
+  
   if (response.statusCode == 200) {
-    List jsonResponse = json.decode(response.body);
-    return jsonResponse.map((escaneo) => Escaneo.fromJson(escaneo)).toList();
+    final jsonResponse = json.decode(response.body);
+    final List<dynamic> escaneosJson = jsonResponse['data'];
+    return escaneosJson.map((escaneo) => Escaneo.fromJson(escaneo)).toList();
   } else {
     throw Exception('Failed to load escaneos');
   }

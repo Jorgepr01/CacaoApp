@@ -29,7 +29,7 @@ class LoginScreen extends StatelessWidget {
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
                   radius: 100.0,
-                  child: Image.asset('assets/logo.png'),
+                  child: Image.asset('assets/logo.jpg'),
                 ),
               ),
               SizedBox(height: 20.0),
@@ -83,18 +83,18 @@ class LoginScreen extends StatelessWidget {
                 child: Text("Iniciar Sesión", style: TextStyle(fontSize: 16)),
               ),
               SizedBox(height: 20.0),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
-                  );
-                },
-                child: Text(
-                  "Olvidé mi contraseña",
-                  style: TextStyle(color: Color.fromARGB(255, 145, 86, 86)),
-                ),
-              ),
+              // TextButton(
+              //   onPressed: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+              //     );
+              //   },
+              //   child: Text(
+              //     "Olvidé mi contraseña",
+              //     style: TextStyle(color: Color.fromARGB(255, 145, 86, 86)),
+              //   ),
+              // ),
             ],
           ),
         ),

@@ -44,7 +44,6 @@ class AuthProvider with ChangeNotifier {
           nombre_estado_us: userData['nombre_estado_us'],
         // Añade más campos según sea necesario
         );
-        print(_user);
         _isAuthenticated = true;
         notifyListeners();
       }else{

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'escaneo_model.dart'; // Importa tu modelo de datos
 import 'api_escaneo_model.dart'; // Importa la función fetchEscaneos
 import 'seguimiento.dart';
 
 class EscaneosTableScreen extends StatefulWidget {
   final int userId;
-  EscaneosTableScreen({required this.userId});
+  final int tipoUs;
+  EscaneosTableScreen({required this.userId, required this.tipoUs});
+
   @override
   _EscaneosTableScreenState createState() => _EscaneosTableScreenState();
 }
@@ -20,12 +23,24 @@ class _EscaneosTableScreenState extends State<EscaneosTableScreen> {
   @override
   void initState() {
     super.initState();
-    futureEscaneos = fetchEscaneos('${widget.userId}');
+    futureEscaneos = fetchEscaneos('${widget.userId}', '${widget.tipoUs}');
     futureEscaneos?.then((data) {
       setState(() {
         escaneos = data;
       });
     });
+  }
+
+  Future<Image> _loadNetworkImage(String url) async {
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'User-Agent': 'Mozilla/5.0'}, // Agregar cabecera User-Agent
+    );
+    if (response.statusCode == 200) {
+      return Image.memory(response.bodyBytes);
+    } else {
+      throw Exception('Failed to load image');
+    }
   }
 
   @override
@@ -40,7 +55,7 @@ class _EscaneosTableScreenState extends State<EscaneosTableScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: InputDecoration(
-                labelText: 'Buscar',
+                labelText: 'Buscar Estado Cacao',
                 suffixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
@@ -63,10 +78,7 @@ class _EscaneosTableScreenState extends State<EscaneosTableScreen> {
                   return Center(child: Text('No hay datos disponibles'));
                 } else {
                   final filteredEscaneos = escaneos!.where((escaneo) {
-                    return escaneo.escaneo.toLowerCase().contains(_searchQuery) ||
-                           escaneo.porcentajeEscaneo.toString().contains(_searchQuery) ||
-                           escaneo.latitud.toString().contains(_searchQuery) ||
-                           escaneo.longitud.toString().contains(_searchQuery);
+                    return (escaneo.nombreEstadoCacao?.toLowerCase().contains(_searchQuery) ?? false);
                   }).toList();
 
                   final paginatedEscaneos = filteredEscaneos.skip(_currentPage * _rowsPerPage).take(_rowsPerPage).toList();
@@ -77,24 +89,50 @@ class _EscaneosTableScreenState extends State<EscaneosTableScreen> {
                         headingRowColor: MaterialStateColor.resolveWith((states) =>  Color.fromARGB(255, 145, 86, 86)),
                         dataRowColor: MaterialStateColor.resolveWith((states) => states.contains(MaterialState.selected) ? Color.fromARGB(255, 145, 86, 86) : Colors.white),
                         columns: const [
+                          DataColumn(label: Text('Estado Cacao', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                           DataColumn(label: Text('Escaneo', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                           DataColumn(label: Text('Porcentaje', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-                          DataColumn(label: Text('Imagen', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-                          DataColumn(label: Text('Latitud', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-                          DataColumn(label: Text('Longitud', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-                          DataColumn(label: Text('Seguimiento', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                          // DataColumn(label: Text('Imagen', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                          DataColumn(label: Text('Nombre Lote', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                          DataColumn(label: Text('Primer Seguimiento', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                          DataColumn(label: Text('Seguimiento-Actual', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                          DataColumn(label: Center(child: Text('Accion', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)))),
                         ],
                         rows: paginatedEscaneos.map((escaneo) {
                           return DataRow(
                             cells: [
+                              DataCell(Text(escaneo.nombreEstadoCacao ?? '')),
                               DataCell(Text(escaneo.escaneo)),
                               DataCell(Text('${escaneo.porcentajeEscaneo}%')),
-                              DataCell(Text(escaneo.imagenEscaneo)),
-                              DataCell(Text(escaneo.latitud.toString())),
-                              DataCell(Text(escaneo.longitud.toString())),
+                              // DataCell(
+                              //   FutureBuilder<Image>(
+                              //     future: _loadNetworkImage('http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/uploads/cacao/${escaneo.imagenEscaneo}'),
+                              //     builder: (context, snapshot) {
+                              //       if (snapshot.connectionState == ConnectionState.waiting) {
+                              //         return CircularProgressIndicator();
+                              //       } else if (snapshot.hasError) {
+                              //         return Text('Error');
+                              //       } else {
+                              //         return snapshot.data ?? Text('No Image');
+                              //       }
+                              //     },
+                              //   ),
+                              // ),
+                              DataCell(Text(escaneo.nombreLote ?? '')),
                               DataCell(
-                                escaneo.estadoEscaneo != 3
-                                    ? ElevatedButton(
+                                 escaneo.estadoEscaneo == 1
+                                 ? Text('Sano', style: TextStyle(color:  const Color.fromARGB(255, 46, 120, 48)))
+                                 : Text('Infectado', style: TextStyle(color: Color.fromARGB(255, 156, 53, 46)))
+                              ),
+                              DataCell(
+                                 escaneo.trasa_estado_cacao_id == 1 || escaneo.estadoEscaneo == 1
+                                 ? Text('Sano', style: TextStyle(color: const Color.fromARGB(255, 46, 120, 48)))
+                                 : Text('Infectado', style: TextStyle(color: Color.fromARGB(255, 156, 53, 46)))
+                              ),
+                              DataCell(
+                                escaneo.trasa_estado_cacao_id == 1
+                                    ? Center(child: Text('Sano', style: TextStyle(color: const Color.fromARGB(255, 46, 120, 48))))
+                                    : ElevatedButton(
                                         onPressed: () {
                                           Navigator.push(
                                             context,
@@ -105,10 +143,9 @@ class _EscaneosTableScreenState extends State<EscaneosTableScreen> {
                                         },
                                         child: Text('Seguimiento'),
                                         style: ElevatedButton.styleFrom(
-                                          foregroundColor: Colors.white, backgroundColor: Color.fromARGB(255, 107, 164, 109),
+                                          foregroundColor: Colors.white, backgroundColor: Color.fromARGB(255, 108, 168, 110),
                                         ),
                                       )
-                                    : Center(child: Text('Sano', style: TextStyle(color: Colors.green))),
                               ),
                             ],
                           );

@@ -5,9 +5,12 @@ class Escaneo {
   final int porcentajeEscaneo;
   final String fechaEscaneo;
   final String imagenEscaneo; // Corregir el campo de 'imgen_escaneo'
+  final int loteId;
   final int usId;
-  final String latitud;
-  final String longitud;
+  final String? nombreLote;
+  final String? nombreEstadoCacao;
+  final int? trasa_estado_cacao_id;
+
   Escaneo({
     required this.idEscaneo,
     required this.escaneo,
@@ -15,22 +18,26 @@ class Escaneo {
     required this.porcentajeEscaneo,
     required this.fechaEscaneo,
     required this.imagenEscaneo,
+    required this.loteId,
     required this.usId,
-    required this.latitud,
-    required this.longitud,
+    this.nombreLote,
+    this.nombreEstadoCacao,
+    this.trasa_estado_cacao_id,
   });
 
   factory Escaneo.fromJson(Map<String, dynamic> json) {
     return Escaneo(
       idEscaneo: json['id_escaneo'],
       escaneo: json['escaneo'] ?? '',
-      estadoEscaneo: json['estado_escaneo_id'],
+      estadoEscaneo: json['estado_cacao_id'],
       porcentajeEscaneo: json['porcentaje_escaneo'],
       fechaEscaneo: json['fecha_escaneo'],
       imagenEscaneo: json['imgen_escaneo'], // Corregir el campo de 'imgen_escaneo'
+      loteId: json['lote_id'],
       usId: json['us_id'],
-      latitud: json['latitud'] ?? '0.0',
-      longitud: json['longitud']?? '0.0'
+      nombreLote: json['nombre_lote'],
+      nombreEstadoCacao: json['nombre_estado_cacao'],
+      trasa_estado_cacao_id: json['trasa_estado_cacao_id'],
     );
   }
 }

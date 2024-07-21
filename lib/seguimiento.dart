@@ -76,7 +76,7 @@ class _ScanPageState extends State<Seguimiento> {
     setState(() {
       _recognitions = recognitions;
       if (recognitions != null && recognitions.isNotEmpty) {
-        v = '${_recognitions[0]["label"]}: ${_recognitions[0]["confidence"].toStringAsFixed(2)}';
+        v = '${_recognitions[0]["label"]}: ${_recognitions[0]["confidence"].toStringAsFixed(2)*100}%';
       } else {
         v = 'No se encontró ninguna reconocimiento';
       }
@@ -227,7 +227,7 @@ class _UploadPageState extends State<UploadPage> {
       ..fields['seguiminiento'] = '${widget.idEscaneo}'
       // ..fields['latitud'] = '-12.12345'
       // ..fields['longitud'] = '-12.12345'
-      // ..fields['user_id'] = "${user.id_us}"
+      ..fields['user_id'] = "${user.tipo_us_id}"
       ..files.add(await http.MultipartFile.fromPath(
         'fileToUpload',
         widget.file!.path,

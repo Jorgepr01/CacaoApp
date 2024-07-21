@@ -76,7 +76,7 @@ class _ScanPageState extends State<ScanPage> {
     setState(() {
       _recognitions = recognitions;
       if (recognitions != null && recognitions.isNotEmpty) {
-        v = '${_recognitions[0]["label"]}: ${_recognitions[0]["confidence"].toStringAsFixed(2)}';
+        v = '${_recognitions[0]["label"]}: ${_recognitions[0]["confidence"].toStringAsFixed(2)*100}';
       } else {
         v = 'No se encontró ninguna reconocimiento';
       }
