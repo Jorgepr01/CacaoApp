@@ -9,6 +9,7 @@ Future<void> CorreoRecuperacion(String email) async {
     );
 
   if (response.statusCode == 200) {
+    print(response.statusCode);
     print('todos bien ${response.body}');
   } else {
     print('error ${response.statusCode}');

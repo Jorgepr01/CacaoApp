@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'auth_provider.dart';
+import 'home_screen.dart';
 import 'forgot_password_screen.dart';
-
 class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -68,10 +68,20 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: 20.0),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   String email = _emailController.text;
                   String password = _passwordController.text;
-                  context.read<AuthProvider>().login(email, password);
+                  bool isLoggedIn = await context.read<AuthProvider>().login(email, password);
+                  if (isLoggedIn) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Login fallido')),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white, backgroundColor:Color.fromARGB(255, 145, 86, 86),
@@ -82,7 +92,8 @@ class LoginScreen extends StatelessWidget {
                 ),
                 child: Text("Iniciar Sesión", style: TextStyle(fontSize: 16)),
               ),
-              SizedBox(height: 20.0),
+              // SizedBox(height: 20.0),
+              //               SizedBox(height: 20.0),
               // TextButton(
               //   onPressed: () {
               //     Navigator.push(

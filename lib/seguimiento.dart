@@ -76,7 +76,7 @@ class _ScanPageState extends State<Seguimiento> {
     setState(() {
       _recognitions = recognitions;
       if (recognitions != null && recognitions.isNotEmpty) {
-        v = '${_recognitions[0]["label"]}: ${_recognitions[0]["confidence"].toStringAsFixed(2)*100}%';
+        v = '${_recognitions[0]["label"]}: ${(_recognitions[0]["confidence"] * 100).toStringAsFixed(2)}%';
       } else {
         v = 'No se encontró ninguna reconocimiento';
       }
@@ -94,11 +94,11 @@ class _ScanPageState extends State<Seguimiento> {
     });
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Escanear Imagen'),
+        title: Text('Escanear Imagen - Seguimiento'),
         backgroundColor: Color.fromARGB(255, 145, 86, 86),
       ),
       body: Padding(
@@ -119,35 +119,46 @@ class _ScanPageState extends State<Seguimiento> {
                 ),
               )
             else
-              Text('Imagen no seleccionada'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _isUploading ? null : () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UploadPage(
-                      image: _image,
-                      file: file,
-                      recognitions: _recognitions,
-                      idEscaneo: widget.idEscaneo, // Añadir idEscaneo
-                    ),
-                  ),
-                );
-                if (result == 'clear') {
-                  _clearData();
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Color.fromARGB(255, 145, 86, 86),
-                minimumSize: Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
+              Container(
+                height: 200,
+                width: 200,
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12.0),
+                  image: DecorationImage(
+                    image: AssetImage('assets/default_esca.png'), // Imagen predeterminada
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-              child: Text('Ingresar Observación y Subir Imagen'),
-            ),
+            SizedBox(height: 20),
+            if (_image != null) // Mostrar botón solo si hay una imagen
+              ElevatedButton(
+                onPressed: _isUploading ? null : () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UploadPage(
+                        image: _image,
+                        file: file,
+                        recognitions: _recognitions,
+                        idEscaneo: widget.idEscaneo, // Añadir idEscaneo
+                      ),
+                    ),
+                  );
+                  if (result == 'clear') {
+                    _clearData();
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color.fromARGB(255, 145, 86, 86),
+                  minimumSize: Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                ),
+                child: Text('Ingresar nombre, lote y Subir Imagen'),
+              ),
             SizedBox(height: 20),
             Text(v),
             SizedBox(height: 20),

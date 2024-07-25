@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'user.dart';
 
-
 class AuthProvider with ChangeNotifier {
   bool _isAuthenticated = false;
-  // crear el objeto de usuario
   User? _user;
-  bool get isAuthenticated => _isAuthenticated;
 
+  bool get isAuthenticated => _isAuthenticated;
   User? get user => _user;
 
-  Future<void> login(String email, String password) async {
+  Future<bool> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/login_movil.php'),
       body: {'email': email, 'password': password},
@@ -20,7 +18,7 @@ class AuthProvider with ChangeNotifier {
 
     if (response.statusCode == 200) {
       var decodedResponse = jsonDecode(utf8.decode(response.bodyBytes)) as Map;
-      if (decodedResponse['message'] == "Login successful"){
+      if (decodedResponse['message'] == "Login successful") {
         Map<String, dynamic> userData = Map<String, dynamic>.from(decodedResponse['user']);
         _user = User(
           id_us: userData['id_us'],
@@ -42,21 +40,18 @@ class AuthProvider with ChangeNotifier {
           nombre_tipo_us: userData['nombre_tipo_us'],
           id_estado_us: userData['id_estado_us'],
           nombre_estado_us: userData['nombre_estado_us'],
-        // Añade más campos según sea necesario
         );
         _isAuthenticated = true;
         notifyListeners();
-      }else{
-        // print(decodedResponse['message']);
-        // print("datos incorrectos");
+        return true;
+      } else {
         _isAuthenticated = false;
         notifyListeners();
+        return false;
       }
     } else {
       _isAuthenticated = false;
-      // print(response.statusCode);
-      // print(response.body);
-      // print("error al iniciar sesion");
+      return false;
     }
   }
 

@@ -29,15 +29,15 @@ class Escaneo {
     return Escaneo(
       idEscaneo: json['id_escaneo'],
       escaneo: json['escaneo'] ?? '',
-      estadoEscaneo: json['estado_cacao_id'],
+      estadoEscaneo: json['estado_cacao_escaneo'],
       porcentajeEscaneo: json['porcentaje_escaneo'],
       fechaEscaneo: json['fecha_escaneo'],
       imagenEscaneo: json['imgen_escaneo'], // Corregir el campo de 'imgen_escaneo'
       loteId: json['lote_id'],
       usId: json['us_id'],
       nombreLote: json['nombre_lote'],
-      nombreEstadoCacao: json['nombre_estado_cacao'],
-      trasa_estado_cacao_id: json['trasa_estado_cacao_id'],
+      nombreEstadoCacao: json['nombre_estado_cacao_escaneo'],
+      trasa_estado_cacao_id: json['estado_cacao_trasabilidad'],
     );
   }
 }

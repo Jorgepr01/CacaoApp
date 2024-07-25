@@ -111,6 +111,7 @@ class _EscaneosTableScreenState extends State<EscaneosTableScreen> {
                               //       if (snapshot.connectionState == ConnectionState.waiting) {
                               //         return CircularProgressIndicator();
                               //       } else if (snapshot.hasError) {
+                              //         print(snapshot.error);
                               //         return Text('Error');
                               //       } else {
                               //         return snapshot.data ?? Text('No Image');
@@ -130,7 +131,7 @@ class _EscaneosTableScreenState extends State<EscaneosTableScreen> {
                                  : Text('Infectado', style: TextStyle(color: Color.fromARGB(255, 156, 53, 46)))
                               ),
                               DataCell(
-                                escaneo.trasa_estado_cacao_id == 1
+                                escaneo.trasa_estado_cacao_id == 1 || escaneo.estadoEscaneo == 1
                                     ? Center(child: Text('Sano', style: TextStyle(color: const Color.fromARGB(255, 46, 120, 48))))
                                     : ElevatedButton(
                                         onPressed: () {
