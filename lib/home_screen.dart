@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'auth_provider.dart';
 import 'deteccion.dart';
 import 'user.dart';
+import 'tabla_tratamiento.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -61,23 +62,23 @@ class HomePage extends StatelessWidget {
                     icon: Icons.camera,
                     color: Colors.blue,
                     title: "Deteccion",
-                    bookings: "Seguimiento",
+                    bookings: "Escaneo",
                     destination: ScanPage(),
                   ),
-                  // ServiceTile(
-                  //   icon: Icons.cameraswitch_outlined,
-                  //   color: Colors.green,
-                  //   title: "Trasabilidad",
-                  //   bookings: "Trasabilidad",
-                  //   // destination: user != null ? EscaneosTableScreen(userId: user.id_us): Container(),
-                  //   destination: user != null ? EscaneosTableScreen_Tras(userId: user.id_us, tipoUs: user.tipo_us_id): Container(),
-                  // ),
                   ServiceTile(
                     icon: Icons.backup_table,
                     color: Colors.orange,
-                    title: "Tabla",
-                    bookings: "Tabla de escaneos",
+                    title: "Seguimiento",
+                    bookings: "Trasabilidad",
                     destination: user != null ? EscaneosTableScreen(userId: user.id_us, tipoUs: user.tipo_us_id): Container(),
+                  ),
+                  ServiceTile(
+                    icon: Icons.cameraswitch_outlined,
+                    color: Colors.green,
+                    title: "Tratamiento",
+                    bookings: "Tabla de tratamientos",
+                    // destination: user != null ? EscaneosTableScreen(userId: user.id_us): Container(),
+                    destination: user != null ? TablaTratamiento(userId: user.id_us): Container(),
                   ),
                 ],
               ),
