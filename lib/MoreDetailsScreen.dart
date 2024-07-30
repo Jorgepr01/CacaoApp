@@ -101,8 +101,8 @@ class _EscaneosTableScreenState extends State<MoreDetailsScreen> {
                               DataColumn(label: Text('Seguimiento', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                               // DataColumn(label: Text('Escaneo', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                               DataColumn(label: Text('Porcentaje', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-                              // DataColumn(label: Text('Nombre Lote', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-                              // DataColumn(label: Text('Primer Seguimiento', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                              DataColumn(label: Text('Fecha del Seguimiento', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                              DataColumn(label: Text('observacion', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                               // DataColumn(label: Text('Seguimiento-Actual', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                               DataColumn(label: Center(child: Text('Accion', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)))),
                             ],
@@ -115,6 +115,16 @@ class _EscaneosTableScreenState extends State<MoreDetailsScreen> {
                                     escaneo.porcentaje_trasabilidad != null
                                     ? Text('${escaneo.porcentaje_trasabilidad}%')
                                     : Text('No hay datos')
+                                    ),
+                                    DataCell(
+                                      escaneo.fecha_trasabilidad != null
+                                      ? Text("${escaneo.fecha_trasabilidad}")
+                                      : Text('No hay datos')
+                                    ),
+                                    DataCell(
+                                      escaneo.observacion != null
+                                      ? Text("${escaneo.observacion}")
+                                      : Text('No hay datos')
                                     ),
                                   // DataCell(Text(escaneo.nombreLote ?? '')),
                                   // DataCell(

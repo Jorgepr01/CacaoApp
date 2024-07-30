@@ -10,6 +10,8 @@ import 'auth_provider.dart';
 import 'lote_http.dart';
 import 'lote_model.dart';
 
+// ScanPage.dart
+
 class ScanPage extends StatefulWidget {
   @override
   _ScanPageState createState() => _ScanPageState();
@@ -22,6 +24,7 @@ class _ScanPageState extends State<ScanPage> {
   var _recognitions;
   var v = "";
   bool _isUploading = false;
+  String _uploadStatus = ""; // Almacena el mensaje de estado
 
   @override
   void initState() {
@@ -47,7 +50,7 @@ class _ScanPageState extends State<ScanPage> {
       });
       await detectimage(file!);
     } catch (e) {
-      // Handle error
+      // Manejo de errores
     }
   }
 
@@ -60,7 +63,7 @@ class _ScanPageState extends State<ScanPage> {
       });
       await detectimage(file!);
     } catch (e) {
-      // Handle error
+      // Manejo de errores
     }
   }
 
@@ -85,13 +88,44 @@ class _ScanPageState extends State<ScanPage> {
     print("Inferencia tardó ${endTime - startTime}ms");
   }
 
-  void _clearData() {
+  void _clearData({bool clearMessage = false}) {
     setState(() {
       _image = null;
       file = null;
       _recognitions = null;
       v = "";
+      if (clearMessage) {
+        _uploadStatus = ""; // Limpia el mensaje solo si se especifica
+      }
     });
+  }
+
+  Future<void> _uploadImage() async {
+    if (_image == null || file == null) {
+      return;
+    }
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UploadPage(
+          image: _image,
+          file: file,
+          recognitions: _recognitions,
+        ),
+      ),
+    );
+
+    if (result == 'clear') {
+      setState(() {
+        _uploadStatus = "Imagen subida exitosamente";
+      });
+      _clearData(clearMessage: false); // No limpiar el mensaje
+    } else if (result == 'error') {
+      setState(() {
+        _uploadStatus = "Error al subir la imagen";
+      });
+    }
   }
 
   @override
@@ -125,29 +159,15 @@ class _ScanPageState extends State<ScanPage> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12.0),
                   image: DecorationImage(
-                    image: AssetImage('assets/default_esca.png'), // Imagen predeterminada
+                    image: AssetImage('assets/default_esca.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
             SizedBox(height: 20),
-            if (_image != null) // Mostrar botón solo si hay una imagen
+            if (_image != null) 
               ElevatedButton(
-                onPressed: _isUploading ? null : () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UploadPage(
-                        image: _image,
-                        file: file,
-                        recognitions: _recognitions,
-                      ),
-                    ),
-                  );
-                  if (result == 'clear') {
-                    _clearData();
-                  }
-                },
+                onPressed: _isUploading ? null : _uploadImage,
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Color.fromARGB(255, 145, 86, 86),
@@ -161,6 +181,14 @@ class _ScanPageState extends State<ScanPage> {
             SizedBox(height: 20),
             Text(v),
             SizedBox(height: 20),
+            if (_uploadStatus.isNotEmpty) // Mostrar el estado de la subida
+              Text(
+                _uploadStatus,
+                style: TextStyle(
+                  color: _uploadStatus.contains("exitosamente") ? Colors.green : Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             Spacer(),
             Container(
               padding: EdgeInsets.symmetric(vertical: 10.0),
@@ -189,6 +217,8 @@ class _ScanPageState extends State<ScanPage> {
   }
 }
 
+// UploadPage.dart
+
 class UploadPage extends StatefulWidget {
   final XFile? image;
   final File? file;
@@ -199,6 +229,7 @@ class UploadPage extends StatefulWidget {
   @override
   _UploadPageState createState() => _UploadPageState();
 }
+
 class _UploadPageState extends State<UploadPage> {
   final TextEditingController _textController = TextEditingController();
   var v = "";
@@ -247,7 +278,7 @@ class _UploadPageState extends State<UploadPage> {
     }
     final uri = Uri.parse("http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/deteccion_movil.php");
     final request = http.MultipartRequest('POST', uri)
-      ..fields['funcion'] = 'subir_imagen_seguimiento'
+      ..fields['funcion'] = 'subir_imagen_seguimiento' 
       ..fields['estado'] = widget.recognitions[0]["label"]
       ..fields['porcentaje'] = (widget.recognitions[0]["confidence"] * 100).toStringAsFixed(2)
       ..fields['escaneo'] = _textController.text
@@ -266,16 +297,18 @@ class _UploadPageState extends State<UploadPage> {
         setState(() {
           v = 'Actualización exitosa';
         });
-        Navigator.pop(context, 'clear'); // Redirigir a ScanPage y limpiar datos
+        Navigator.pop(context, 'clear'); // Redirigir a ScanPage con éxito
       } else {
         setState(() {
           v = 'Actualización fallida con estado: ${response.statusCode}';
         });
+        Navigator.pop(context, 'error'); // Redirigir a ScanPage con error
       }
     } catch (e) {
       setState(() {
         v = 'Error en la actualización de la imagen: $e';
       });
+      Navigator.pop(context, 'error'); // Redirigir a ScanPage con error
     } finally {
       setState(() {
         _isUploading = false;

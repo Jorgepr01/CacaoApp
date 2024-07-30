@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:clasificacion/user.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite_v2/tflite_v2.dart';
@@ -6,6 +7,10 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'auth_provider.dart';
+import 'lote_http.dart';
+import 'lote_model.dart';
+
+// ScanPage.dart
 
 class Seguimiento extends StatefulWidget {
   final int idEscaneo;
@@ -14,7 +19,6 @@ class Seguimiento extends StatefulWidget {
   @override
   _ScanPageState createState() => _ScanPageState();
 }
-
 class _ScanPageState extends State<Seguimiento> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
@@ -22,6 +26,7 @@ class _ScanPageState extends State<Seguimiento> {
   var _recognitions;
   var v = "";
   bool _isUploading = false;
+  String _uploadStatus = ""; // Almacena el mensaje de estado
 
   @override
   void initState() {
@@ -47,7 +52,7 @@ class _ScanPageState extends State<Seguimiento> {
       });
       await detectimage(file!);
     } catch (e) {
-      // Handle error
+      // Manejo de errores
     }
   }
 
@@ -60,7 +65,7 @@ class _ScanPageState extends State<Seguimiento> {
       });
       await detectimage(file!);
     } catch (e) {
-      // Handle error
+      // Manejo de errores
     }
   }
 
@@ -85,16 +90,48 @@ class _ScanPageState extends State<Seguimiento> {
     print("Inferencia tardó ${endTime - startTime}ms");
   }
 
-  void _clearData() {
+  void _clearData({bool clearMessage = false}) {
     setState(() {
       _image = null;
       file = null;
       _recognitions = null;
       v = "";
+      if (clearMessage) {
+        _uploadStatus = ""; // Limpia el mensaje solo si se especifica
+      }
     });
   }
 
-@override
+  Future<void> _uploadImage() async {
+    if (_image == null || file == null) {
+      return;
+    }
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UploadPage(
+          image: _image,
+          file: file,
+          recognitions: _recognitions,
+          idEscaneo: widget.idEscaneo, // Añadir idEscaneo
+        ),
+      ),
+    );
+
+    if (result == 'clear') {
+      setState(() {
+        _uploadStatus = "Imagen subida exitosamente";
+      });
+      _clearData(clearMessage: false); // No limpiar el mensaje
+    } else if (result == 'error') {
+      setState(() {
+        _uploadStatus = "Error al subir la imagen";
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -125,30 +162,15 @@ class _ScanPageState extends State<Seguimiento> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12.0),
                   image: DecorationImage(
-                    image: AssetImage('assets/default_esca.png'), // Imagen predeterminada
+                    image: AssetImage('assets/default_esca.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
             SizedBox(height: 20),
-            if (_image != null) // Mostrar botón solo si hay una imagen
+            if (_image != null) 
               ElevatedButton(
-                onPressed: _isUploading ? null : () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UploadPage(
-                        image: _image,
-                        file: file,
-                        recognitions: _recognitions,
-                        idEscaneo: widget.idEscaneo, // Añadir idEscaneo
-                      ),
-                    ),
-                  );
-                  if (result == 'clear') {
-                    _clearData();
-                  }
-                },
+                onPressed: _isUploading ? null : _uploadImage,
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Color.fromARGB(255, 145, 86, 86),
@@ -157,11 +179,19 @@ class _ScanPageState extends State<Seguimiento> {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
-                child: Text('Ingresar nombre, lote y Subir Imagen'),
+                child: Text('Subir Seguimiento'),
               ),
             SizedBox(height: 20),
             Text(v),
             SizedBox(height: 20),
+            if (_uploadStatus.isNotEmpty) // Mostrar el estado de la subida
+              Text(
+                _uploadStatus,
+                style: TextStyle(
+                  color: _uploadStatus.contains("exitosamente") ? Colors.green : Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             Spacer(),
             Container(
               padding: EdgeInsets.symmetric(vertical: 10.0),
@@ -190,6 +220,8 @@ class _ScanPageState extends State<Seguimiento> {
   }
 }
 
+// UploadPage.dart
+
 class UploadPage extends StatefulWidget {
   final XFile? image;
   final File? file;
@@ -200,6 +232,7 @@ class UploadPage extends StatefulWidget {
 
   @override
   _UploadPageState createState() => _UploadPageState();
+
 }
 
 class _UploadPageState extends State<UploadPage> {
@@ -229,7 +262,6 @@ class _UploadPageState extends State<UploadPage> {
       });
       return;
     }
-
     final uri = Uri.parse("http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/controllers/movil/trasabilidad_movil.php");
     final request = http.MultipartRequest('POST', uri)
       ..fields['estado'] = widget.recognitions[0]["label"]
@@ -244,7 +276,6 @@ class _UploadPageState extends State<UploadPage> {
         widget.file!.path,
         filename: path.basename(widget.file!.path),
       ));
-
     try {
       final response = await request.send();
       if (response.statusCode == 200) {
@@ -313,7 +344,7 @@ class _UploadPageState extends State<UploadPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _isUploading ? null : _updateImage,
+              onPressed: (_isUploading) ? null : _updateImage,
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
                 backgroundColor: Color.fromARGB(255, 145, 86, 86),
@@ -332,4 +363,3 @@ class _UploadPageState extends State<UploadPage> {
     );
   }
 }
-

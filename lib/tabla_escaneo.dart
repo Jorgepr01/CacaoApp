@@ -93,6 +93,7 @@ class _EscaneosTableScreenState extends State<EscaneosTableScreen> {
                           DataColumn(label: Text('Estado Cacao', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                           // DataColumn(label: Text('Escaneo', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                           DataColumn(label: Text('Porcentaje', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                          DataColumn(label: Text('Fecha del deteccion', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                           // DataColumn(label: Text('Imagen', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                           DataColumn(label: Text('Lote', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                           // DataColumn(label: Text('Primer Seguimiento', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
@@ -106,6 +107,11 @@ class _EscaneosTableScreenState extends State<EscaneosTableScreen> {
                               DataCell(Text(escaneo.nombreEstadoCacao ?? '')),
                               // DataCell(Text(escaneo.escaneo)),
                               DataCell(Text('${escaneo.porcentajeEscaneo}%')),
+                              DataCell(
+                                escaneo.fechaEscaneo != null
+                                ? Text("${escaneo.fechaEscaneo}")
+                                : Text('No hay datos')
+                              ),
                               // DataCell(
                               //   FutureBuilder<Image>(
                               //     future: _loadNetworkImage('http://agrocacao.medianewsonline.com/agrocacao/Clasificacion-cacao/uploads/cacao/${escaneo.imagenEscaneo}'),

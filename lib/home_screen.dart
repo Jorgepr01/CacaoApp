@@ -20,7 +20,8 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () {
-              context.read<AuthProvider>().logout();
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                authProvider.logout(context);
             },
           ),
         ],
@@ -43,7 +44,7 @@ class HomePage extends StatelessWidget {
                       Row(
                         children: [
                           Text(user.email_us, style: TextStyle(color: Colors.grey)),
-                          Icon(Icons.arrow_drop_down, color: Colors.grey),
+                          // Icon(Icons.arrow_drop_down, color: Colors.grey),
                         ],
                       )
                     ],

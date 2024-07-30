@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
           return MaterialApp(
+            initialRoute: '/',
             home: authProvider.isAuthenticated ? HomePage() : SplashScreen(),
           );
         },
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
 }
 
 class SplashScreen extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +38,7 @@ class SplashScreen extends StatelessWidget {
             Image.asset('assets/logo.jpg', height: 200, width: 200),
             SizedBox(height: 20),
             Text(
-              'Detección de enfermedad del Fito en cacao',
+              'Detección y seguimiento de la enfermedad Phytopthora palmivora en el cultivo de cacao',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),

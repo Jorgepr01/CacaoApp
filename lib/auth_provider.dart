@@ -55,9 +55,11 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  void logout() {
+  void logout(BuildContext context) {
     _user = null;
     _isAuthenticated = false;
     notifyListeners();
+    // Redirigir a la página de inicio
+    Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
   }
 }
