@@ -10,15 +10,14 @@ class Escaneo {
   final String? nombreLote;
   final int usId;
 
-  // Trasabilidad
-
+  // trazabilidad
 
   final int? trasa_estado_cacao_id;
-  final int? porcentaje_trasabilidad;
-  final String? fecha_trasabilidad;
-  final String? imgen_trasabilidad;
+  final int? porcentaje_trazabilidad;
+  final String? fecha_trazabilidad;
+  final String? imgen_trazabilidad;
   final String? observacion;
-  final String? nombre_estado_cacao_trasabilidad;
+  final String? nombre_estado_cacao_trazabilidad;
 
   Escaneo({
     required this.idEscaneo,
@@ -31,14 +30,14 @@ class Escaneo {
     required this.loteId,
     this.nombreLote,
     required this.usId,
-  // Trasabilidad
+  // trazabilidad
 
     this.trasa_estado_cacao_id,
-    this.porcentaje_trasabilidad,
-    this.fecha_trasabilidad,
-    this.imgen_trasabilidad,
+    this.porcentaje_trazabilidad,
+    this.fecha_trazabilidad,
+    this.imgen_trazabilidad,
     this.observacion,
-    this.nombre_estado_cacao_trasabilidad,
+    this.nombre_estado_cacao_trazabilidad,
     
   });
 
@@ -54,12 +53,12 @@ class Escaneo {
       loteId: json['lote_id'],
       nombreLote: json['nombre_lote'],
       usId: json['us_id'],
-    // Trasabilidad
-      trasa_estado_cacao_id: json['estado_cacao_trasabilidad'],
-      porcentaje_trasabilidad: json['porcentaje_trasabilidad'],
-      fecha_trasabilidad: json['fecha_trasabilidad'],
-      imgen_trasabilidad: json['imgen_trasabilidad'],
-      nombre_estado_cacao_trasabilidad: json['nombre_estado_cacao_trasabilidad'],
+    // trazabilidad
+      trasa_estado_cacao_id: json['estado_cacao_trazabilidad'],
+      porcentaje_trazabilidad: json['porcentaje_trazabilidad'],
+      fecha_trazabilidad: json['fecha_trazabilidad'],
+      imgen_trazabilidad: json['imgen_trazabilidad'],
+      nombre_estado_cacao_trazabilidad: json['nombre_estado_cacao_trazabilidad'],
       observacion: json['observacion'],
     );
   }

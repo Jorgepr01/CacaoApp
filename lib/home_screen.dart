@@ -70,7 +70,7 @@ class HomePage extends StatelessWidget {
                     icon: Icons.backup_table,
                     color: Colors.orange,
                     title: "Seguimiento",
-                    bookings: "Trasabilidad",
+                    bookings: "trazabilidad",
                     destination: user != null ? EscaneosTableScreen(userId: user.id_us, tipoUs: user.tipo_us_id): Container(),
                   ),
                   ServiceTile(

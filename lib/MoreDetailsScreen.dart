@@ -109,16 +109,16 @@ class _EscaneosTableScreenState extends State<MoreDetailsScreen> {
                             rows: paginatedEscaneos.map((escaneo) {
                               return DataRow(
                                 cells: [
-                                  DataCell(Text(escaneo.nombre_estado_cacao_trasabilidad ?? 'No hay datos')),
+                                  DataCell(Text(escaneo.nombre_estado_cacao_trazabilidad ?? 'No hay datos')),
                                   // DataCell(Text(escaneo.escaneo)),
                                   DataCell(
-                                    escaneo.porcentaje_trasabilidad != null
-                                    ? Text('${escaneo.porcentaje_trasabilidad}%')
+                                    escaneo.porcentaje_trazabilidad != null
+                                    ? Text('${escaneo.porcentaje_trazabilidad}%')
                                     : Text('No hay datos')
                                     ),
                                     DataCell(
-                                      escaneo.fecha_trasabilidad != null
-                                      ? Text("${escaneo.fecha_trasabilidad}")
+                                      escaneo.fecha_trazabilidad != null
+                                      ? Text("${escaneo.fecha_trazabilidad}")
                                       : Text('No hay datos')
                                     ),
                                     DataCell(
