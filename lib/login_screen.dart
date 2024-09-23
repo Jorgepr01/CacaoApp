@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'auth_provider.dart';
 import 'home_screen.dart';
-import 'forgot_password_screen.dart';
+
 class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -38,14 +38,17 @@ class LoginScreen extends StatelessWidget {
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: "Email",
-                  labelStyle: TextStyle(color: Color.fromARGB(255, 145, 86, 86)),
+                  labelStyle:
+                      TextStyle(color: Color.fromARGB(255, 145, 86, 86)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide(color:Color.fromARGB(255, 145, 86, 86)),
+                    borderSide:
+                        BorderSide(color: Color.fromARGB(255, 145, 86, 86)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide(color:Color.fromARGB(255, 145, 86, 86)),
+                    borderSide:
+                        BorderSide(color: Color.fromARGB(255, 145, 86, 86)),
                   ),
                 ),
               ),
@@ -55,14 +58,17 @@ class LoginScreen extends StatelessWidget {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: "Contraseña",
-                  labelStyle: TextStyle(color:Color.fromARGB(255, 145, 86, 86)),
+                  labelStyle:
+                      TextStyle(color: Color.fromARGB(255, 145, 86, 86)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide(color:Color.fromARGB(255, 145, 86, 86)),
+                    borderSide:
+                        BorderSide(color: Color.fromARGB(255, 145, 86, 86)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide(color: Color.fromARGB(255, 145, 86, 86)),
+                    borderSide:
+                        BorderSide(color: Color.fromARGB(255, 145, 86, 86)),
                   ),
                 ),
               ),
@@ -71,7 +77,8 @@ class LoginScreen extends StatelessWidget {
                 onPressed: () async {
                   String email = _emailController.text;
                   String password = _passwordController.text;
-                  bool isLoggedIn = await context.read<AuthProvider>().login(email, password);
+                  bool isLoggedIn =
+                      await context.read<AuthProvider>().login(email, password);
                   if (isLoggedIn) {
                     Navigator.pushReplacement(
                       context,
@@ -84,7 +91,8 @@ class LoginScreen extends StatelessWidget {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor:Color.fromARGB(255, 145, 86, 86),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color.fromARGB(255, 145, 86, 86),
                   minimumSize: Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),

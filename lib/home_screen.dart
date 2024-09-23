@@ -1,5 +1,4 @@
 import 'package:clasificacion/tabla_escaneo.dart';
-import 'package:clasificacion/tabla_escaneo_tras.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'auth_provider.dart';
@@ -20,8 +19,9 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () {
-                final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                authProvider.logout(context);
+              final authProvider =
+                  Provider.of<AuthProvider>(context, listen: false);
+              authProvider.logout(context);
             },
           ),
         ],
@@ -39,11 +39,13 @@ class HomePage extends StatelessWidget {
                     children: [
                       Text(
                         "${user.nombre_us} ${user.apellido_us}",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       Row(
                         children: [
-                          Text(user.email_us, style: TextStyle(color: Colors.grey)),
+                          Text(user.email_us,
+                              style: TextStyle(color: Colors.grey)),
                           // Icon(Icons.arrow_drop_down, color: Colors.grey),
                         ],
                       )
@@ -71,7 +73,10 @@ class HomePage extends StatelessWidget {
                     color: Colors.orange,
                     title: "Seguimiento",
                     bookings: "trazabilidad",
-                    destination: user != null ? EscaneosTableScreen(userId: user.id_us, tipoUs: user.tipo_us_id): Container(),
+                    destination: user != null
+                        ? EscaneosTableScreen(
+                            userId: user.id_us, tipoUs: user.tipo_us_id)
+                        : Container(),
                   ),
                   ServiceTile(
                     icon: Icons.cameraswitch_outlined,
@@ -79,7 +84,9 @@ class HomePage extends StatelessWidget {
                     title: "Tratamiento",
                     bookings: "Tabla de tratamientos",
                     // destination: user != null ? EscaneosTableScreen(userId: user.id_us): Container(),
-                    destination: user != null ? TablaTratamiento(userId: user.id_us): Container(),
+                    destination: user != null
+                        ? TablaTratamiento(userId: user.id_us)
+                        : Container(),
                   ),
                 ],
               ),
@@ -108,7 +115,6 @@ class ServiceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -134,7 +140,8 @@ class ServiceTile extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: 40),
             Spacer(),
-            Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(title,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             Text(bookings, style: TextStyle(color: Colors.grey)),
           ],
@@ -143,4 +150,3 @@ class ServiceTile extends StatelessWidget {
     );
   }
 }
-
